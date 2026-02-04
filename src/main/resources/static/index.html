@@ -5,56 +5,248 @@
     <title>港口管理系统</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            background-color: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
         }
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
             background: white;
             padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
         h1 {
             color: #2c3e50;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 10px;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
         }
-        .api-list {
-            margin: 20px 0;
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        .api-section {
+            margin: 30px 0;
+            padding: 20px;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+        .section-title {
+            color: #3498db;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
         }
         .api-item {
-            background: #f8f9fa;
-            padding: 10px;
+            background: white;
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border-left: 4px solid;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        .api-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        .method {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 15px;
+            min-width: 70px;
+            text-align: center;
+        }
+        .get { background: #d4edda; color: #155724; border-color: #c3e6cb; }
+        .post { background: #d1ecf1; color: #0c5460; border-color: #bee5eb; }
+        .put { background: #fff3cd; color: #856404; border-color: #ffeaa7; }
+        .delete { background: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+        .api-description {
+            color: #666;
+            font-size: 0.9em;
+            margin-left: 20px;
+        }
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+        .quick-link {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .quick-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .status-info {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 5px solid #3498db;
+        }
+        .info-item {
             margin: 5px 0;
-            border-left: 4px solid #3498db;
-            font-family: monospace;
+            display: flex;
+            align-items: center;
+        }
+        .info-item strong {
+            min-width: 120px;
+            color: #2c3e50;
+        }
+        .copy-btn {
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 0.8em;
+        }
+        .copy-btn:hover {
+            background: #3498db;
         }
     </style>
 </head>
 <body>
 <div class="container">
     <h1>🚢 港口管理系统</h1>
-    <p>后端服务已成功启动！</p>
+    <p class="subtitle">后端服务已成功启动！完整的API接口文档如下：</p>
 
-    <h2>📡 可用API接口</h2>
-    <div class="api-list">
-        <div class="api-item">GET    /api/managers/all</div>
-        <div class="api-item">GET    /api/managers/{id}</div>
-        <div class="api-item">POST   /api/managers/add</div>
-        <div class="api-item">PUT    /api/managers/update</div>
-        <div class="api-item">DELETE /api/managers/delete/{id}</div>
+    <div class="status-info">
+        <div class="info-item">
+            <strong>服务地址：</strong>
+            <span id="baseUrl">http://localhost:8081</span>
+            <button class="copy-btn" onclick="copyToClipboard('baseUrl')">复制</button>
+        </div>
+        <div class="info-item">
+            <strong>启动时间：</strong>
+            <span id="currentTime"></span>
+        </div>
+        <div class="info-item">
+            <strong>状态：</strong>
+            <span style="color: #27ae60;">● 运行中</span>
+        </div>
     </div>
 
-    <h2>🔗 快速访问</h2>
-    <p>
-        <a href="/api/managers/all" target="_blank">查看所有管理员</a>
-    </p>
+    <h2>🔗 快速访问链接</h2>
+    <div class="quick-links">
+        <a href="/api/managers/all" target="_blank" class="quick-link">查看所有管理员</a>
+        <a href="/api/products/all" target="_blank" class="quick-link">查看所有商品</a>
+        <a href="/api/products/allAvailable" target="_blank" class="quick-link">查看有库存商品</a>
+    </div>
 
-    <p><strong>服务地址:</strong> http://localhost:8081</p>
-    <p><strong>启动时间:</strong> 2026-02-03 14:19:28</p>
+    <!-- 管理员管理接口 -->
+    <div class="api-section">
+        <h3 class="section-title">👨‍💼 管理员管理</h3>
+        <div class="api-item"><span class="method get">GET</span> /api/managers/all<div class="api-description">查询所有管理员</div></div>
+        <div class="api-item"><span class="method get">GET</span> /api/managers/{id}<div class="api-description">根据ID查询</div></div>
+        <div class="api-item"><span class="method post">POST</span> /api/managers/add<div class="api-description">添加管理员</div></div>
+        <div class="api-item"><span class="method put">PUT</span> /api/managers/update<div class="api-description">更新管理员</div></div>
+        <div class="api-item"><span class="method delete">DELETE</span> /api/managers/delete/{id}<div class="api-description">删除管理员</div></div>
+    </div>
+
+    <!-- 商品管理接口 -->
+    <div class="api-section">
+        <h3 class="section-title">📦 商品管理</h3>
+        <div class="api-item"><span class="method post">POST</span> /api/products/add<div class="api-description">添加商品</div></div>
+        <div class="api-item"><span class="method put">PUT</span> /api/products/update<div class="api-description">更新商品</div></div>
+        <div class="api-item"><span class="method delete">DELETE</span> /api/products/delete/{id}<div class="api-description">删除商品</div></div>
+        <div class="api-item"><span class="method get">GET</span> /api/products/all<div class="api-description">查询所有商品</div></div>
+        <div class="api-item"><span class="method get">GET</span> /api/products/{id}<div class="api-description">根据ID查询商品</div></div>
+        <div class="api-item"><span class="method get">GET</span> /api/products/name/{name}<div class="api-description">根据商品名称查询</div></div>
+        <div class="api-item"><span class="method get">GET</span> /api/products/category/{category_id}<div class="api-description">根据商品类型查询</div></div>
+        <div class="api-item"><span class="method get">GET</span> /api/products/allAvailable<div class="api-description">查询所有有库存的商品</div></div>
+    </div>
+
+    <!-- 用户认证接口 -->
+    <div class="api-section">
+        <h3 class="section-title">🔐 用户认证</h3>
+        <div class="api-item"><span class="method post">POST</span> /api/auth/login<div class="api-description">用户登录</div></div>
+        <div class="api-item"><span class="method post">POST</span> /api/auth/register<div class="api-description">用户注册</div></div>
+        <div class="api-item"><span class="method post">POST</span> /api/auth/logout<div class="api-description">用户注销</div></div>
+        <div class="api-item"><span class="method post">POST</span> /api/auth/changePassword<div class="api-description">用户修改密码</div></div>
+        <div class="api-item"><span class="method post">POST</span> /api/auth/isUserNameExist/{username}<div class="api-description">判断用户名是否存在</div></div>
+        <div class="api-item"><span class="method post">POST</span> /api/auth/isUserLoggedInAs/{loginData}<div class="api-description">判断用户是否以特定身份登录</div></div>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px; color: #7f8c8d; font-size: 0.9em;">
+        <p>港口管理系统 v1.0 | 使用Spring Boot + MyBatis构建</p>
+        <p>提示：点击快速访问链接可以直接测试接口</p>
+    </div>
 </div>
+
+<script>
+    // 显示当前时间
+    function updateTime() {
+        const now = new Date();
+        const timeString = now.toLocaleString('zh-CN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        });
+        document.getElementById('currentTime').textContent = timeString;
+    }
+
+    // 复制功能
+    function copyToClipboard(elementId) {
+        const text = document.getElementById(elementId).textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            alert('已复制到剪贴板: ' + text);
+        });
+    }
+
+    // 页面加载时更新时间
+    updateTime();
+    // 每秒更新时间
+    setInterval(updateTime, 1000);
+
+    // 为所有API项添加点击复制功能
+    document.querySelectorAll('.api-item').forEach(item => {
+        item.style.cursor = 'pointer';
+        item.addEventListener('click', function() {
+            const method = this.querySelector('.method').textContent.trim();
+            const path = this.textContent.replace(method, '').replace('查询所有管理员', '')
+                .replace('根据ID查询', '').replace('添加管理员', '')
+                .replace('更新管理员', '').replace('删除管理员', '')
+                .replace('添加商品', '').replace('更新商品', '')
+                .replace('删除商品', '').replace('查询所有商品', '')
+                .replace('根据ID查询商品', '').replace('根据商品名称查询', '')
+                .replace('根据商品类型查询', '').replace('查询所有有库存的商品', '')
+                .replace('用户登录', '').replace('用户注册', '')
+                .replace('用户注销', '').replace('用户修改密码', '')
+                .replace('判断用户名是否存在', '').replace('判断用户是否以特定身份登录', '')
+                .trim();
+
+            const fullUrl = 'http://localhost:8081' + path;
+            navigator.clipboard.writeText(fullUrl).then(() => {
+                alert('已复制完整URL: ' + fullUrl);
+            });
+        });
+    });
+</script>
 </body>
-</html>tml>
+</html>

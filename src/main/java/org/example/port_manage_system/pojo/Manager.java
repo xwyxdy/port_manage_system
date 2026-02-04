@@ -1,8 +1,12 @@
 package org.example.port_manage_system.pojo;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Manager {
     private String username;
     private String password;
