@@ -16,12 +16,13 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+    //注册功能
     @PostMapping("register")
     public Map<String,Object> register(@RequestBody Manager manager){
         Map<String,Object> result=new HashMap<>();
         boolean success=authService.register(manager);
         try {
-            if( success){
+            if(success){
                 result.put("success",true);
                 result.put("message","注册成功");
                 result.put("timeStamp",new Date());
@@ -39,6 +40,7 @@ public class AuthController {
         return result;
     }
 
+    //登录功能
     @PostMapping("login")
     public Map<String,Object> login(@RequestBody Map<String,String> logInData){
         Map<String,Object> result=new HashMap<>();
@@ -66,8 +68,9 @@ public class AuthController {
         return result;
     }
 
-    @PostMapping("changePassword/{changePasswordData}")
-    public Map<String,Object> changePassword(@PathVariable Map<String,String> changePasswordData){
+    //修改密码功能
+    @PostMapping("changePassword")
+    public Map<String,Object> changePassword(@RequestBody Map<String,String> changePasswordData){
         Map<String,Object> result=new HashMap<>();
         String username=changePasswordData.get("username");
         String oldPassword=changePasswordData.get("oldPassword");
@@ -91,6 +94,7 @@ public class AuthController {
         return result;
     }
 
+    //注销功能
     @PostMapping("logout")
     public Map<String,Object> logout(@RequestBody Map<String,String> logoutData){
         String username=logoutData.get("username");
@@ -114,8 +118,9 @@ public class AuthController {
         return result;
     }
 
-    @PostMapping("isUserNameExist/{username}")
-    public Map<String,Object> isUserNameExist(@PathVariable String username){
+    //查询用户名是否存在
+    @PostMapping("isUserNameExist")
+    public Map<String,Object> isUserNameExist(@RequestBody String username){
         Map<String,Object> result=new HashMap<>();
         try {
             if(username==null){
@@ -139,8 +144,9 @@ public class AuthController {
         return result;
     }
 
-    @PostMapping("isUserLoggedInAs/{loginData}")
-    public Map<String,Object> isUserLoggedInAs(@PathVariable Map<String,String> loginData){
+    //查询用户是否以特定类型登录
+    @PostMapping("isUserLoggedInAs")
+    public Map<String,Object> isUserLoggedInAs(@RequestBody Map<String,String> loginData){
         String username=loginData.get("username");
         String password=loginData.get("password");
         String requiredUserType=loginData.get("requiredUserType");
@@ -149,7 +155,7 @@ public class AuthController {
             boolean success=authService.isUserLoggedInAs(username,password,requiredUserType);
             if(success){
                 result.put("success",true);
-                result.put("message","该用户已登录");
+                result.put("message","该用户以特定类型登录");
                 result.put("timeStamp",new Date());
                 result.put("data",null);
             }else{

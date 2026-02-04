@@ -30,4 +30,5 @@ public interface ProductService {
     //查询所有状态为AVAILABLE的产品
     List<Product> getAllAvailable();
 
+
 }

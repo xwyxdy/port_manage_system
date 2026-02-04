@@ -1,6 +1,7 @@
 package org.example.port_manage_system.controller;
 
 import org.example.port_manage_system.pojo.Product;
+import org.example.port_manage_system.service.CategoryService;
 import org.example.port_manage_system.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +17,24 @@ public class ProductsController {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private CategoryService categoryService;
+
     //添加商品
     @PostMapping("/add")
     public Map<String,Object> addProduct (@RequestBody Product product){
         Map<String,Object> result =new HashMap<>();
+        //检查商品是否存在，若存在，就增加该商品数量
+        List<Product> products=productService.getProducts();
+        products.forEach(product_1 -> {
+            if(product_1.getProduct_name().equals(product.getProduct_name())){
+                int quantity=product_1.getQuantity()+product.getQuantity();
+                product.setQuantity(quantity);
+                result.put("success",true);
+                result.put("message","商品已存在，已增加商品数量");
+                result.put("data",product);
+            }
+        });
         int rows=productService.addProduct(product);
         try {
             if(rows>0){
@@ -102,9 +117,10 @@ public class ProductsController {
     }
 
     //根据商品类别id查询商品
-    @GetMapping("/category/{category_id}")
-    public Map<String,Object> getProductByCategory(@PathVariable Integer category_id){
+    @GetMapping("/category/{category_name}")
+    public Map<String,Object> getProductByCategory(@PathVariable String category_name){
         Map<String,Object> result =new HashMap<>();
+        Integer category_id=categoryService.getCategoryIdByName(category_name);
         List<Product> products=productService.getProductByCategoryId(category_id);
         try {
             if(products!=null){
