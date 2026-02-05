@@ -17,8 +17,8 @@ public class CategoryService {
         return categoryMapper.getCategoryIdByName(categoryName);
     };
 
-    public String getCategoryByCategoryId(Integer id){
-        return categoryMapper.getCategoryByCategoryId(id);
+    public String getCategoryNameById(Integer id){
+        return categoryMapper.getCategoryNameById( id);
     };
 
 }

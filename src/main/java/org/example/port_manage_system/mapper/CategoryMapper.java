@@ -7,8 +7,10 @@ import org.apache.ibatis.annotations.Select;
 public interface CategoryMapper {
 
     //根据id查询类别
-    String getCategoryByCategoryId(Integer id);
+    @Select(("select category_name from product_categories where id=#{id}"))
+    String getCategoryNameById(Integer id);
 
     //根据类别名称查询类别id
+    @Select("select id from product_categories where category_name= #{categoryName}")
     Integer getCategoryIdByName(String categoryName);
 }

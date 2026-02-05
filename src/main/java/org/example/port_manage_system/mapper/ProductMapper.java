@@ -1,7 +1,7 @@
 package org.example.port_manage_system.mapper;
 
 import org.apache.ibatis.annotations.*;
-import org.example.port_manage_system.pojo.Product;
+import org.example.port_manage_system.domain.entity.Product;
 
 import java.util.List;
 

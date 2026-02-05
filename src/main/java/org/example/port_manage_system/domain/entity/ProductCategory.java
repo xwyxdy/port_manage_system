@@ -1,4 +1,4 @@
-package org.example.port_manage_system.pojo;
+package org.example.port_manage_system.domain.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
