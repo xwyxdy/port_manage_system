@@ -1,6 +1,8 @@
 package org.example.port_manage_system.controller;
 
-import org.example.port_manage_system.pojo.Manager;
+import org.example.port_manage_system.domain.dto.*;
+import org.example.port_manage_system.domain.vo.ApiResultVO;
+import org.example.port_manage_system.domain.vo.ManagerVO;
 import org.example.port_manage_system.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,155 +20,98 @@ public class AuthController {
 
     //注册功能
     @PostMapping("register")
-    public Map<String,Object> register(@RequestBody Manager manager){
-        Map<String,Object> result=new HashMap<>();
-        boolean success=authService.register(manager);
+    public ApiResultVO<ManagerVO> register(@RequestBody RegisterDTO registerDTO){
         try {
+            boolean success=authService.register(registerDTO);
             if(success){
-                result.put("success",true);
-                result.put("message","注册成功");
-                result.put("timeStamp",new Date());
-                manager.setPassword(null);
-                result.put("data",manager);
-                result.put("note","请使用注册的用户名密码进行登录，后续操作都需要提供用户名密码");
+                ManagerVO vo=new ManagerVO();
+                vo.setUsername(registerDTO.getUsername());
+                vo.setPassword(registerDTO.getPassword());
+                vo.setPhone(registerDTO.getPhone());
+                vo.setUserType(registerDTO.getUserType());
+                return ApiResultVO.success("注册成功",vo);
             }else{
-                result.put("success",false);
-                result.put("message","注册失败");
+                return ApiResultVO.error("注册失败");
             }
         } catch (Exception e) {
-            result.put("success",false);
-            result.put("message","注册异常"+e.getMessage());
+            return ApiResultVO.error("注册异常"+e.getMessage());
         }
-        return result;
     }
 
     //登录功能
     @PostMapping("login")
-    public Map<String,Object> login(@RequestBody Map<String,String> logInData){
-        Map<String,Object> result=new HashMap<>();
-        String username=logInData.get("username");
-        String password=logInData.get("password");
+    public ApiResultVO<ManagerVO> login(@RequestBody LoginDTO loginDTO){
         try {
-            if(username==null || password==null){
-                result.put("success",false);
-                result.put("message","用户名或密码不能为空");
+            if(loginDTO.getUsername()==null||loginDTO.getPassword()==null){
+                return ApiResultVO.error("用户名或密码不能为空");
             }
-            Manager manager=authService.login(username,password);
-            if(manager!=null){
-                result.put("success",true);
-                result.put("message","登录成功");
-                result.put("timeStamp",new Date());
-                manager.setPassword(null);
-                result.put("data",manager);
+            ManagerVO vo=authService.login(loginDTO);
+            if(vo!=null){
+                return ApiResultVO.success("登录成功",vo);
             }else{
-                result.put("success",false);
+                return ApiResultVO.error("用户名或密码错误");
             }
-        }catch (Exception e){
-            result.put("success",false);
-            result.put("message","登录异常"+e.getMessage());
+        } catch (Exception e) {
+            return ApiResultVO.error("登录异常"+e.getMessage());
         }
-        return result;
     }
 
     //修改密码功能
     @PostMapping("changePassword")
-    public Map<String,Object> changePassword(@RequestBody Map<String,String> changePasswordData){
-        Map<String,Object> result=new HashMap<>();
-        String username=changePasswordData.get("username");
-        String oldPassword=changePasswordData.get("oldPassword");
-        String newPassword=changePasswordData.get("newPassword");
+    public ApiResultVO<ManagerVO> changePassword(@RequestBody ChangePasswordDTO changePasswordData){
         try {
-            boolean success=authService.changePassword(username,oldPassword,newPassword);
+            boolean success=authService.changePassword(changePasswordData.getUsername(),changePasswordData.getOldPassword(),changePasswordData.getNewPassword());
             if(success){
-                result.put("success",true);
-                result.put("message","修改密码成功");
-                result.put("timeStamp",new Date());
-                result.put("data",null);
-                result.put("note","请使用修改后的密码进行登录");
+                return ApiResultVO.success("修改密码成功", null);
             }else{
-                result.put("success",false);
-                result.put("message","修改密码失败");
+                return ApiResultVO.error("修改密码失败");
             }
         } catch (Exception e) {
-            result.put("success",false);
-            result.put("message","修改密码异常"+e.getMessage());
+            return ApiResultVO.error("修改密码异常"+e.getMessage());
         }
-        return result;
     }
 
     //注销功能
     @PostMapping("logout")
-    public Map<String,Object> logout(@RequestBody Map<String,String> logoutData){
-        String username=logoutData.get("username");
-        String password=logoutData.get("password");
-        Map<String,Object> result=new HashMap<>();
+    public ApiResultVO<ManagerVO> logout(@RequestBody LogoutDTO logoutDTO){
         try {
-            boolean success=authService.logout(username,password);
+            boolean success=authService.logout(logoutDTO.getUsername(),logoutDTO.getPassword());
             if(success){
-                result.put("success",true);
-                result.put("message","注销成功");
-                result.put("timeStamp",new Date());
-                result.put("data",null);
+                return ApiResultVO.success("注销成功", null);
             }else{
-                result.put("success",false);
-                result.put("message","注销失败");
+                return ApiResultVO.error("注销失败");
             }
-        }catch (Exception e){
-            result.put("success",false);
-            result.put("message","注销异常"+e.getMessage());
+        } catch (Exception e) {
+            return ApiResultVO.error("注销异常"+e.getMessage());
         }
-        return result;
     }
 
     //查询用户名是否存在
     @PostMapping("isUserNameExist")
-    public Map<String,Object> isUserNameExist(@RequestBody String username){
-        Map<String,Object> result=new HashMap<>();
+    public ApiResultVO<ManagerVO> isUserNameExist(@RequestBody UsernameExistsDTO usernameExistsDTO){
         try {
-            if(username==null){
-                result.put("success",false);
-                result.put("message","用户名不能为空");
+            if(usernameExistsDTO.getUsername()== null){
+                return ApiResultVO.error("用户名不能为空");
             }
-            boolean exist=authService.isUserNameExist(username);
-            if(exist){
-                result.put("success",true);
-                result.put("message","用户名已存在");
-                result.put("timeStamp",new Date());
-                result.put("data",null);
-            }else{
-                result.put("success",false);
-                result.put("message","用户名不存在");
-            }
-        }catch (Exception e){
-            result.put("success",false);
-            result.put("message","查询用户名异常"+e.getMessage());
+            boolean exists=authService.isUserNameExist(usernameExistsDTO.getUsername());
+            return exists ? ApiResultVO.success("用户名已存在", null) : ApiResultVO.error("用户名不存在");
+        } catch (Exception e) {
+            return ApiResultVO.error("查询用户名是否存在异常"+e.getMessage());
         }
-        return result;
     }
 
     //查询用户是否以特定类型登录
     @PostMapping("isUserLoggedInAs")
-    public Map<String,Object> isUserLoggedInAs(@RequestBody Map<String,String> loginData){
-        String username=loginData.get("username");
-        String password=loginData.get("password");
-        String requiredUserType=loginData.get("requiredUserType");
-        Map<String,Object> result=new HashMap<>();
+    public ApiResultVO<ManagerVO> isUserLoggedInAs(@RequestBody UserIdentityDTO userIdentityDTO){
         try {
-            boolean success=authService.isUserLoggedInAs(username,password,requiredUserType);
-            if(success){
-                result.put("success",true);
-                result.put("message","该用户以特定类型登录");
-                result.put("timeStamp",new Date());
-                result.put("data",null);
-            }else{
-                result.put("success",false);
-                result.put("message","用户类型错误");
+            if(userIdentityDTO.getUserType()==null){
+                return ApiResultVO.error("用户类型不能为空");
             }
-        }catch (Exception e){
-            result.put("success",false);
-            result.put("message","查询用户登录状态异常"+e.getMessage());
+            boolean is=authService.isUserLoggedInAs(userIdentityDTO.getUsername(),userIdentityDTO.getPassword(),userIdentityDTO.getUserType());
+            return is ? ApiResultVO.success("用户已以特定类型登录", null) : ApiResultVO.error("用户未以特定类型登录");
+        } catch (Exception e) {
+            return ApiResultVO.error("查询用户是否已以特定类型登录异常"+e.getMessage());
         }
-        return result;
     }
 
 

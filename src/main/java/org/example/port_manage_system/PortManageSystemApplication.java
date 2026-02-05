@@ -1,7 +1,6 @@
 package org.example.port_manage_system;
 
-import org.example.port_manage_system.mapper.ManagerMapper;
-import org.example.port_manage_system.pojo.Manager;
+
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
