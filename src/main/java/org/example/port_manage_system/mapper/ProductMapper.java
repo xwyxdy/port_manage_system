@@ -39,6 +39,6 @@ public interface ProductMapper {
     int delete(Integer id);
 
     //更新商品信息
-    @Update("update products set product_name= #{productName},quantity= #{quantity}")
+    @Update("update products set quantity= #{quantity},unit_price=#{price} WHERE id=#{id}")
     int update(Product product);
 }
