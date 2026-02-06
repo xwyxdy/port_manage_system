@@ -15,7 +15,7 @@ public class ProductBO {
 
     //业务逻辑：检查商品价格是否合理
     public boolean isValidPrice(){
-        return product.getPrice()!=null&&product.getPrice().compareTo(BigDecimal.ZERO)>0;
+        return product.getUnitPrice()!=null&&product.getUnitPrice().compareTo(BigDecimal.ZERO)>0;
     }
 
     //业务逻辑：检查商品数量是否合理

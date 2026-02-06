@@ -70,7 +70,7 @@ public class ProductServiceImpl implements ProductService{
 
             //更新字段
             productExists.setQuantity(productUpdateDTO.getQuantity());
-            productExists.setPrice(productUpdateDTO.getPrice());
+            productExists.setUnitPrice(productUpdateDTO.getPrice());
 
             //使用BO处理业务逻辑
             ProductBO productBO=new ProductBO(productExists);
@@ -99,6 +99,11 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public int deleteProduct(Integer id) {
         try {
+            //检查是否有引用该商品的记录
+            int count=productMapper.checkProductUsage(id);
+            if(count>0){
+                return 0; //表示商品正在被使用
+            }
             int result=productMapper.delete(id);
             return result>0?1:0;
         } catch (Exception e) {
@@ -127,14 +132,14 @@ public class ProductServiceImpl implements ProductService{
         }
         ProductVO vo=new ProductVO();
         vo.setId(product.getId());
-        vo.setProduct_name(product.getProduct_name());
+        vo.setProduct_name(product.getProductName());
         vo.setQuantity(product.getQuantity());
-        vo.setPrice(product.getPrice());
+        vo.setPrice(product.getUnitPrice());
         vo.setStatus(product.getStatus());
-        vo.setCategory_id(product.getCategory_id());
-        vo.setCreated_by(product.getCreated_by());
-        if(product.getCategory_id()!=null){
-            String categoryName=categoryService.getCategoryNameById(product.getCategory_id());
+        vo.setCategory_id(product.getCategoryId());
+        vo.setCreated_by(product.getCreatedBy());
+        if(product.getCategoryId()!=null){
+            String categoryName=categoryService.getCategoryNameById(product.getCategoryId());
             vo.setCategory_name(categoryName);
         }
         return vo;

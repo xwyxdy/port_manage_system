@@ -29,8 +29,8 @@ public interface ProductMapper {
     List<Product> getAllAvailable();
 
     //插入商品返回自增id
-    @Insert("insert into products(product_name,quantity,category_id,price,status,created_by)"
-    +"values(#{productName},#{quantity},#{categoryId},#{price},#{status},#{createdBy})")
+    @Insert("insert into products(product_name,quantity,category_id,unit_price,status,created_by)"
+    +"values(#{productName},#{quantity},#{categoryId},#{unit_price},#{status},#{createdBy})")
     @Options(useGeneratedKeys = true,keyProperty = "id")
     int insert(Product product);
 
@@ -39,6 +39,10 @@ public interface ProductMapper {
     int delete(Integer id);
 
     //更新商品信息
-    @Update("update products set quantity= #{quantity},unit_price=#{price} WHERE id=#{id}")
+    @Update("update products set quantity= #{quantity},unit_price=#{unit_price} WHERE id=#{id}")
     int update(Product product);
+
+    //检查商品是否被使用
+    @Select("select count(*) from ship_cargo where product_id = #{id}")
+    int checkProductUsage(Integer id);
 }

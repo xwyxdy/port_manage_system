@@ -78,8 +78,8 @@ public class ProductsController {
     }
 
     //根据id查询商品
-    @GetMapping("/{id}")
-    public ApiResultVO<ProductVO> getProductById (@PathVariable Integer id){
+    @GetMapping("/id")
+    public ApiResultVO<ProductVO> getProductById (@RequestParam Integer id){
         try {
             ProductVO productVO = productService.getProductById(id);
             if (productVO != null) {
@@ -93,8 +93,8 @@ public class ProductsController {
     }
 
     //根据商品名称查询商品
-    @GetMapping("/name/{name}")
-    public ApiResultVO<ProductVO> getProductByName (@PathVariable String name){
+    @GetMapping("/name")
+    public ApiResultVO<ProductVO> getProductByName (@RequestParam String name){
         try {
             ProductVO productVO = productService.getProductByName(name);
             if (productVO != null) {
@@ -107,9 +107,9 @@ public class ProductsController {
         }
     }
 
-    //根据商品类别id查询商品
-    @GetMapping("/category/{category_name}")
-    public ApiResultVO<List<ProductVO>> getProductByCategory(@PathVariable String category_name) {
+    //根据商品类别名查询商品
+    @GetMapping("/category")
+    public ApiResultVO<List<ProductVO>> getProductByCategory(@RequestParam String category_name) {
         try {
             Integer categoryId = categoryService.getCategoryIdByName(category_name);
             if (categoryId == null) {
@@ -158,14 +158,14 @@ public class ProductsController {
     }
 
     //删除商品
-    @DeleteMapping("/delete/{id}")
-    public ApiResultVO<ProductVO> deleteManager(@PathVariable Integer id){
+    @DeleteMapping("/delete/id")
+    public ApiResultVO<ProductVO> deleteManager(@RequestParam Integer id){
         try {
             int result = productService.deleteProduct(id);
             if (result > 0) {
                 return ApiResultVO.success("删除成功", null);
             } else {
-                return ApiResultVO.error("删除失败，商品不存在");
+                return ApiResultVO.error("删除失败，商品正在被使用，无法删除");
             }
         } catch (Exception e) {
             return ApiResultVO.error("删除失败: " + e.getMessage());

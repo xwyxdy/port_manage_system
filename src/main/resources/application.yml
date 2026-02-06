@@ -2,9 +2,15 @@
 spring:
   application:
     name: demo
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
   # ================ 数据库配置 ================
   datasource:
-    url: jdbc:mysql://localhost:3306/portmanagementsystem
+    url: jdbc:mysql://localhost:3306/portmanagementsystem?useUnicode=true&characterEncoding=utf-8
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
