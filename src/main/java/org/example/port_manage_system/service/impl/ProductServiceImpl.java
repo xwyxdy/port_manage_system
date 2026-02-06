@@ -1,11 +1,13 @@
-package org.example.port_manage_system.service;
+package org.example.port_manage_system.service.impl;
 
 import org.example.port_manage_system.domain.bo.ProductBO;
 import org.example.port_manage_system.domain.dto.ProductAddDTO;
 import org.example.port_manage_system.domain.dto.ProductUpdateDTO;
+import org.example.port_manage_system.domain.entity.Product;
 import org.example.port_manage_system.domain.vo.ProductVO;
 import org.example.port_manage_system.mapper.ProductMapper;
-import org.example.port_manage_system.domain.entity.Product;
+import org.example.port_manage_system.service.CategoryService;
+import org.example.port_manage_system.service.ProductService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductMapper productMapper;

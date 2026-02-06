@@ -27,7 +27,7 @@ server:
 # ================ MyBatis配置 ================
 mybatis:
   mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: org.example.port_management_system.pojo
+  type-aliases-package: org.example.port_management_system.domain.entity
   configuration:
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
@@ -41,3 +41,13 @@ logging:
     org.mybatis: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+mybatis-plus:
+  # 配置 XML 文件位置
+  mapper-locations: classpath*:/mapper/**/*.xml
+  # 实体扫描，多个package用逗号或者分号分隔
+  type-aliases-package: org.example.port_manage_system.entity
+  configuration:
+    # 开启驼峰命名自动映射
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 打印SQL日志

@@ -1,11 +1,16 @@
-package org.example.port_manage_system.service;
+package org.example.port_manage_system.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import jakarta.annotation.Resource;
+import lombok.RequiredArgsConstructor;
 import org.example.port_manage_system.domain.bo.ManagerBO;
 import org.example.port_manage_system.domain.dto.LoginDTO;
 import org.example.port_manage_system.domain.dto.RegisterDTO;
 import org.example.port_manage_system.domain.vo.ManagerVO;
 import org.example.port_manage_system.mapper.ManagerMapper;
 import org.example.port_manage_system.domain.entity.Manager;
+import org.example.port_manage_system.service.AuthService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class AuthServiceImpl implements AuthService{
+public class AuthServiceImpl implements AuthService {
 
-    @Autowired
+    @Resource
     private ManagerMapper managerMapper;
 
 
@@ -69,7 +74,12 @@ public class AuthServiceImpl implements AuthService{
                 System.out.println("用户名或密码不能为空");
                 return null;
             }
-            Manager manager=managerMapper.getByUsername(loginDTO.getUsername());
+
+            // 使用QueryWrapper构建查询条件
+            QueryWrapper<Manager> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("username", loginDTO.getUsername());
+            Manager manager = managerMapper.selectOne(queryWrapper);
+
             if(manager==null){
                 System.out.println("用户不存在");
                 return null;
@@ -77,7 +87,7 @@ public class AuthServiceImpl implements AuthService{
             if(!manager.getPassword().equals(loginDTO.getPassword())){
                 System.out.println("密码错误");
                 return null;
-            }else{
+            } else {
                 System.out.println("用户"+loginDTO.getUsername()+"登录成功");
                 //entity->VO
                 ManagerVO managerVO=new ManagerVO();
@@ -91,6 +101,7 @@ public class AuthServiceImpl implements AuthService{
         }
     }
 
+
     //修改密码功能
     @Override
     public boolean changePassword(String userName, String oldPassword, String newPassword) {
@@ -99,7 +110,10 @@ public class AuthServiceImpl implements AuthService{
                 System.out.println("用户名或密码不能为空");
                 return false;
             }
-            Manager manager=managerMapper.getByUsername(userName);
+            // 使用条件构造器查询用户
+            LambdaQueryWrapper<Manager> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(Manager::getUsername, userName);
+            Manager manager = managerMapper.selectOne(wrapper);
             if(manager==null){
                 System.out.println("用户不存在");
                 return false;
@@ -113,7 +127,7 @@ public class AuthServiceImpl implements AuthService{
                 return false;
             }
             manager.setPassword(newPassword);
-            int result=managerMapper.update(manager);
+            int result=managerMapper.updateById(manager);
             if (result > 0) {
                 System.out.println("用户" + userName + "修改密码成功");
                 return true;
@@ -127,10 +141,14 @@ public class AuthServiceImpl implements AuthService{
         }
     }
 
+
     //注销功能
     @Override
     public boolean logout(String userName, String password) {
-        Manager manager=managerMapper.getByUsername(userName);
+        // 使用条件构造器查询用户
+        LambdaQueryWrapper<Manager> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Manager::getUsername, userName);
+        Manager manager = managerMapper.selectOne(wrapper);
         if(manager==null){
             System.out.println("用户不存在");
             return false;
@@ -139,7 +157,7 @@ public class AuthServiceImpl implements AuthService{
             System.out.println("注销失败，密码错误");
             return false;
         }
-        int result=managerMapper.delete(manager.getId());
+        int result=managerMapper.deleteById( manager);
         if (result > 0) {
             System.out.println("用户" + userName + "注销成功");
             return true;
@@ -151,7 +169,10 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public boolean isUserNameExist(String username) {
         try {
-            Manager manager=managerMapper.getByUsername(username);
+            // 使用条件构造器查询用户
+            LambdaQueryWrapper<Manager> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(Manager::getUsername, username);
+            Manager manager = managerMapper.selectOne(wrapper);
             System.out.println("用户"+username+"是否存在："+(manager!=null));
             return manager!=null;
         } catch (Exception e) {
@@ -164,7 +185,10 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public boolean isUserLoggedInAs(String username, String password, String requiredUserType) {
         try {
-            Manager manager=managerMapper.getByUsername(username);
+            // 使用条件构造器查询用户
+            LambdaQueryWrapper<Manager> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(Manager::getUsername, username);
+            Manager manager = managerMapper.selectOne(wrapper);
             boolean success=manager!=null&&manager.getPassword().equals(password)&&manager.getUserType().equals(requiredUserType);
             System.out.println("用户"+username+"是否已登录："+success);
             return success;
