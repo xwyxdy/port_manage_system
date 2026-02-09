@@ -47,7 +47,7 @@ public class AuthController {
             }
             ManagerVO vo=authService.login(loginDTO);
             if(vo!=null){
-                return ApiResultVO.success("登录成功",vo);
+                return ApiResultVO.success("登录成功",null);
             }else{
                 return ApiResultVO.error("用户名或密码错误");
             }

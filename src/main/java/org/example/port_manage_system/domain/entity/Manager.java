@@ -10,11 +10,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("users")
 public class Manager {
     private String username;
     private String password;
-    @TableId(type = IdType.AUTO)
     private Integer id;
     private String phone;
     private String userType;
