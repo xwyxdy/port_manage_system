@@ -102,4 +102,16 @@ public class InPortServiceImpl implements InPortService {
             return null;
         }
     }
+
+    //在入港申请表中根据船只id查询船只
+    @Override
+    public Ship getByShipId(Integer id) {
+        return inPortMapper.getByShipId(id);
+    }
+
+    //在入港申请表中根据主键id查询入港记录
+    @Override
+    public InPortDTO getById(Integer id) {
+        return inPortMapper.getById(id);
+    }
 }

@@ -80,6 +80,18 @@ public class ShipServiceImpl implements ShipService {
             if(ship==null){
                 System.out.println("船只"+shipName+"不存在");
             }
+            Ship shipInPort=inPortService.getByShipId(id);
+            //如果船只未申请入港，直接删除
+            if(shipInPort==null){
+                int result=shipMapper.deleteById(ship.getId());
+                if(result>0){
+                    System.out.println("船只"+shipName+"删除成功");
+                    return true;
+                }else{
+                    System.out.println("船只"+shipName+"删除失败");
+                    return false;
+                }
+            }
             //先在入港申请表中删除船只信息
             boolean r=inPortService.deleteByShipId(ship.getId());
             if(r){
@@ -107,6 +119,18 @@ public class ShipServiceImpl implements ShipService {
             Ship ship=shipMapper.getByName(name);
             if(ship==null){
                 System.out.println("船只"+name+"不存在");
+            }
+            Ship shipInPort=inPortService.getByShipId(ship.getId());
+            //如果船只未申请入港，直接删除
+            if(shipInPort==null){
+                int result=shipMapper.deleteByName(name);
+                if(result>0){
+                    System.out.println("船只"+name+"删除成功");
+                    return true;
+                }else{
+                    System.out.println("船只"+name+"删除失败");
+                    return false;
+                }
             }
             //先在入港申请表中删除船只信息
             boolean r=inPortService.deleteByShipId(ship.getId());

@@ -1,5 +1,7 @@
 package org.example.port_manage_system.service;
 
+import org.example.port_manage_system.domain.dto.InPortDTO;
+import org.example.port_manage_system.domain.entity.Ship;
 import org.example.port_manage_system.domain.vo.InPortApplicationVO;
 
 public interface InPortService {
@@ -13,4 +15,10 @@ public interface InPortService {
 
     //获取最新的入港申请
     InPortApplicationVO getLatestApplication(String shipName);
+
+    //根据船只id在入港申请表中查询船只
+    Ship getByShipId(Integer id);
+
+    //根据记录id在入港申请表中查询入港信息
+    InPortDTO getById(Integer id);
 }
