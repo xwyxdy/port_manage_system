@@ -1,12 +1,11 @@
 package org.example.port_manage_system.service.impl;
 
-import org.example.port_manage_system.domain.bo.InPortBO;
 import org.example.port_manage_system.domain.bo.ShipBO;
 import org.example.port_manage_system.domain.dto.InPortDTO;
-import org.example.port_manage_system.domain.dto.ShipDTO;
+import org.example.port_manage_system.domain.dto.ShipRequestDTO;
+import org.example.port_manage_system.domain.dto.ShipResponseDTO;
 import org.example.port_manage_system.domain.entity.Manager;
 import org.example.port_manage_system.domain.entity.Ship;
-import org.example.port_manage_system.domain.vo.InPortApplicationVO;
 import org.example.port_manage_system.domain.vo.ProductVO;
 import org.example.port_manage_system.domain.vo.ShipCargoVO;
 import org.example.port_manage_system.domain.vo.ShipVO;
@@ -15,7 +14,6 @@ import org.example.port_manage_system.mapper.ManagerMapper;
 import org.example.port_manage_system.mapper.ShipMapper;
 import org.example.port_manage_system.service.ShipService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,40 +32,31 @@ public class ShipServiceImpl implements ShipService {
     private InPortServiceImpl inPortService;
 
     @Override
-    public boolean addShip(ShipDTO shipDTO) {
-        try {
-            if(isShipNameExist(shipDTO.getShipName())){
-               throw new BusinessException("船只"+shipDTO.getShipName()+"已存在");
-            }
-            //DTO->entity
-            Ship ship=new Ship();
-            BeanUtils.copyProperties(shipDTO,ship);
-            //使用BO业务进行验证
-            ShipBO shipBO=new ShipBO(ship,managerMapper);
-            if(!shipBO.isValidShipType()){
-                throw new BusinessException("船只"+ship.getShipName()+"船只类型无效");
-            }
-            if(!shipBO.isValidShipSize()){
-                throw new BusinessException("船只"+ship.getShipName()+"船只尺寸无效");
-            }
-            if(!shipBO.isValidQualificationStatus()){
-                throw new BusinessException("船只"+ship.getShipName()+"船只资格状态无效");
-            }
-            if(!shipBO.isValidOwnerId()){
-                throw new BusinessException("船只"+ship.getShipName()+"船长id无效");
-            }
-            int result=shipMapper.insert(ship);
-            if(result>0){
-                System.out.println("船只"+shipDTO.getShipName()+"添加成功");
-                return true;
-            }else{
-                throw new BusinessException("船只"+ship.getShipName()+"添加失败");
-            }
-        }catch (BusinessException e){
-            throw e;
-        }catch (Exception e) {
-            throw new BusinessException("船只添加异常：" + e.getMessage());
-        }
+    public ShipResponseDTO addShip(ShipRequestDTO request) {
+        // 转换请求DTO为实体
+        Ship ship = new Ship();
+        ship.setShipName(request.getShipName());
+        ship.setOwnerId(request.getOwnerId());
+        ship.setShipType(request.getShipType());
+        ship.setShipSize(request.getShipSize());
+        ship.setQualificationStatus("PENDING"); // 设置默认状态
+
+        // 保存到数据库
+        shipMapper.insert(ship);
+
+        // 返回响应DTO
+        return convertToResponseDTO(ship);
+    }
+
+    private ShipResponseDTO convertToResponseDTO(Ship ship) {
+        ShipResponseDTO dto = new ShipResponseDTO();
+        dto.setId(ship.getId());
+        dto.setShipName(ship.getShipName());
+        dto.setOwnerId(ship.getOwnerId());
+        dto.setShipType(ship.getShipType());
+        dto.setShipSize(ship.getShipSize());
+        dto.setQualificationStatus(ship.getQualificationStatus());
+        return dto;
     }
 
     @Override

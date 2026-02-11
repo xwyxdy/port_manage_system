@@ -4,13 +4,14 @@ import org.example.port_manage_system.domain.bo.ProductBO;
 import org.example.port_manage_system.domain.dto.ProductAddDTO;
 import org.example.port_manage_system.domain.dto.ProductUpdateDTO;
 import org.example.port_manage_system.domain.entity.Product;
+import org.example.port_manage_system.domain.vo.ProductCategoryListVO;
+import org.example.port_manage_system.domain.vo.ProductCategoryVO;
 import org.example.port_manage_system.domain.vo.ProductVO;
 import org.example.port_manage_system.exception.BusinessException;
 import org.example.port_manage_system.mapper.ProductMapper;
 import org.example.port_manage_system.service.CategoryService;
 import org.example.port_manage_system.service.ProductService;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -213,5 +214,14 @@ public class ProductServiceImpl implements ProductService {
         }catch (Exception e) {
             throw new BusinessException("查询商品异常" + e.getMessage());
         }
+    }
+
+    @Override
+    public ProductCategoryListVO getCategoryList() {
+        List<ProductCategoryVO> categoryList = productMapper.getCategoryList();
+        ProductCategoryListVO result=new ProductCategoryListVO();
+        result.setList(categoryList);
+        result.setTotal(categoryList.size());
+        return result;
     }
 }

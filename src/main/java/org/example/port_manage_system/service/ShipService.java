@@ -1,9 +1,8 @@
 package org.example.port_manage_system.service;
 
-import org.example.port_manage_system.domain.dto.InPortDTO;
-import org.example.port_manage_system.domain.dto.ShipDTO;
+import org.example.port_manage_system.domain.dto.ShipRequestDTO;
+import org.example.port_manage_system.domain.dto.ShipResponseDTO;
 import org.example.port_manage_system.domain.entity.Ship;
-import org.example.port_manage_system.domain.vo.InPortApplicationVO;
 import org.example.port_manage_system.domain.vo.ProductVO;
 import org.example.port_manage_system.domain.vo.ShipCargoVO;
 import org.example.port_manage_system.domain.vo.ShipVO;
@@ -13,7 +12,7 @@ import java.util.List;
 public interface ShipService {
 
     //新增船只
-    boolean addShip(ShipDTO shipDTO);
+    ShipResponseDTO addShip(ShipRequestDTO request);
 
     //根据船只id删除船只
     boolean deleteById(Integer id);

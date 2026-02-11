@@ -2,6 +2,7 @@ package org.example.port_manage_system.mapper;
 
 import org.apache.ibatis.annotations.*;
 import org.example.port_manage_system.domain.entity.Product;
+import org.example.port_manage_system.domain.vo.ProductCategoryVO;
 
 import java.util.List;
 
@@ -45,4 +46,8 @@ public interface ProductMapper {
     //检查商品是否被使用
     @Select("select count(*) from ship_cargo where product_id = #{id}")
     int checkProductUsage(Integer id);
+
+    //获取商品分类列表
+    @Select("select * from product_categories")
+    List<ProductCategoryVO> getCategoryList();
 }

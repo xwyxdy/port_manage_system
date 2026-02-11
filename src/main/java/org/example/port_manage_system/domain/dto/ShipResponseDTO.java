@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ShipDTO {
+public class ShipResponseDTO {
     private Integer id;
     private String shipName;
     private Integer ownerId;

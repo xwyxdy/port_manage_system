@@ -2,6 +2,7 @@ package org.example.port_manage_system.service;
 
 import org.example.port_manage_system.domain.dto.ProductAddDTO;
 import org.example.port_manage_system.domain.dto.ProductUpdateDTO;
+import org.example.port_manage_system.domain.vo.ProductCategoryListVO;
 import org.example.port_manage_system.domain.vo.ProductVO;
 
 import java.util.List;
@@ -34,4 +35,7 @@ public interface ProductService {
 
 
     boolean isProductExist(String productName);
+
+    //获取所有商品分类列表
+    ProductCategoryListVO getCategoryList();
 }
