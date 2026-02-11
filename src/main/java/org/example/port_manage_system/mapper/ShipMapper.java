@@ -3,6 +3,8 @@ package org.example.port_manage_system.mapper;
 import org.apache.ibatis.annotations.*;
 import org.example.port_manage_system.domain.dto.InPortDTO;
 import org.example.port_manage_system.domain.entity.Ship;
+import org.example.port_manage_system.domain.vo.ProductVO;
+import org.example.port_manage_system.domain.vo.ShipCargoVO;
 import org.example.port_manage_system.domain.vo.ShipVO;
 
 import java.util.List;
@@ -48,4 +50,28 @@ public interface ShipMapper {
     //根据船只id查询最新的入港申请
     @Select("SELECT * FROM port_entry_applications WHERE ship_id = #{shipId} ORDER BY id DESC LIMIT 1")
     InPortDTO getLatestApplicationByShipId(@Param("shipId") Integer shipId);
+
+    //船长向船上添加商品
+    @Insert("insert into ship_cargo(ship_id,product_id,cargo_quantity) values (#{shipId},#{productId},{cargoQuantity})")
+    ShipCargoVO addProductToShip(Integer shipId,Integer productId,Integer cargoQuantity);
+
+    //船长删除船上某商品
+    @Delete("delete from ship_cargo where id=#{id}")
+    boolean deleteProductFromShip(Integer id);
+
+    //船长修改某商品数量
+    @Update("update ship_cargo set cargo_quantity = #{cargoQuantity} where id = #{id}")
+    boolean updateProductQuantity(Integer id,Integer cargoQuantity);
+
+    //船长查询船上所有商品
+    @Select("select * from ship_cargo where ship_id = #{shipId}")
+    List<ProductVO> getAllProductsInShip(Integer shipId);
+
+    //船长查询船上某商品
+    @Select("select * from ship_cargo where ship_id = #{shipId} and product_id = #{productId}")
+    ProductVO getProductInShip(Integer shipId,Integer productId);
+
+    //船长查询船上所有有库存商品
+    @Select("select * from ship_cargo where ship_id = #{shipId} and cargo_quantity > 0")
+    List<ProductVO> getAllAvailableProductsInShip(Integer shipId);
 }

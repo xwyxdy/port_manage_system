@@ -7,7 +7,10 @@ import org.example.port_manage_system.domain.dto.ShipDTO;
 import org.example.port_manage_system.domain.entity.Manager;
 import org.example.port_manage_system.domain.entity.Ship;
 import org.example.port_manage_system.domain.vo.InPortApplicationVO;
+import org.example.port_manage_system.domain.vo.ProductVO;
+import org.example.port_manage_system.domain.vo.ShipCargoVO;
 import org.example.port_manage_system.domain.vo.ShipVO;
+import org.example.port_manage_system.exception.BusinessException;
 import org.example.port_manage_system.mapper.ManagerMapper;
 import org.example.port_manage_system.mapper.ShipMapper;
 import org.example.port_manage_system.service.ShipService;
@@ -34,8 +37,7 @@ public class ShipServiceImpl implements ShipService {
     public boolean addShip(ShipDTO shipDTO) {
         try {
             if(isShipNameExist(shipDTO.getShipName())){
-                System.out.println("船只"+shipDTO.getShipName()+"已存在");
-                return false;
+               throw new BusinessException("船只"+shipDTO.getShipName()+"已存在");
             }
             //DTO->entity
             Ship ship=new Ship();
@@ -43,32 +45,28 @@ public class ShipServiceImpl implements ShipService {
             //使用BO业务进行验证
             ShipBO shipBO=new ShipBO(ship,managerMapper);
             if(!shipBO.isValidShipType()){
-                System.out.println("船只类型"+ship.getShipType()+"无效");
-                return false;
+                throw new BusinessException("船只"+ship.getShipName()+"船只类型无效");
             }
             if(!shipBO.isValidShipSize()){
-                System.out.println("船只尺寸"+ship.getShipSize()+"无效");
-                return false;
+                throw new BusinessException("船只"+ship.getShipName()+"船只尺寸无效");
             }
             if(!shipBO.isValidQualificationStatus()){
-                System.out.println("船只资格状态"+ship.getQualificationStatus()+"无效");
-                return false;
+                throw new BusinessException("船只"+ship.getShipName()+"船只资格状态无效");
             }
             if(!shipBO.isValidOwnerId()){
-                System.out.println("船只"+ship.getShipName()+"船长id无效");
-                return false;
+                throw new BusinessException("船只"+ship.getShipName()+"船长id无效");
             }
             int result=shipMapper.insert(ship);
             if(result>0){
                 System.out.println("船只"+shipDTO.getShipName()+"添加成功");
                 return true;
             }else{
-                System.out.println("船只"+shipDTO.getShipName()+"添加失败");
-                return false;
+                throw new BusinessException("船只"+ship.getShipName()+"添加失败");
             }
-        } catch (BeansException e) {
-            System.out.println("添加船只异常：" + e.getMessage());
-            return false;
+        }catch (BusinessException e){
+            throw e;
+        }catch (Exception e) {
+            throw new BusinessException("船只添加异常：" + e.getMessage());
         }
     }
 
@@ -78,9 +76,9 @@ public class ShipServiceImpl implements ShipService {
             Ship ship=shipMapper.getById( id);
             String shipName=ship.getShipName();
             if(ship==null){
-                System.out.println("船只"+shipName+"不存在");
+                throw new BusinessException("船只"+shipName+"不存在");
             }
-            Ship shipInPort=inPortService.getByShipId(id);
+            InPortDTO shipInPort=inPortService.getByShipId(id);
             //如果船只未申请入港，直接删除
             if(shipInPort==null){
                 int result=shipMapper.deleteById(ship.getId());
@@ -88,8 +86,7 @@ public class ShipServiceImpl implements ShipService {
                     System.out.println("船只"+shipName+"删除成功");
                     return true;
                 }else{
-                    System.out.println("船只"+shipName+"删除失败");
-                    return false;
+                    throw new BusinessException("船只"+shipName+"删除失败");
                 }
             }
             //先在入港申请表中删除船只信息
@@ -100,16 +97,15 @@ public class ShipServiceImpl implements ShipService {
                     System.out.println("船只"+shipName+"删除成功");
                     return true;
                 }else{
-                    System.out.println("船只"+shipName+"删除失败");
-                    return false;
+                    throw new BusinessException("船只"+shipName+"删除失败");
                 }
             }else{
-                System.out.println("船只"+shipName+"在入港申请表中删除失败");
-                return false;
+                throw new BusinessException("船只"+shipName+"在入港申请表中删除失败");
             }
-        } catch (Exception e) {
-            System.out.println("删除船只异常：" + e.getMessage());
-            return false;
+        }catch (BusinessException e){
+            throw e;
+        }catch (Exception e) {
+            throw new BusinessException("船只删除异常：" + e.getMessage());
         }
     }
 
@@ -118,9 +114,9 @@ public class ShipServiceImpl implements ShipService {
         try {
             Ship ship=shipMapper.getByName(name);
             if(ship==null){
-                System.out.println("船只"+name+"不存在");
+                throw new BusinessException("船只"+name+"不存在");
             }
-            Ship shipInPort=inPortService.getByShipId(ship.getId());
+            InPortDTO shipInPort=inPortService.getByShipId(ship.getId());
             //如果船只未申请入港，直接删除
             if(shipInPort==null){
                 int result=shipMapper.deleteByName(name);
@@ -128,8 +124,7 @@ public class ShipServiceImpl implements ShipService {
                     System.out.println("船只"+name+"删除成功");
                     return true;
                 }else{
-                    System.out.println("船只"+name+"删除失败");
-                    return false;
+                    throw new BusinessException("船只"+name+"删除失败");
                 }
             }
             //先在入港申请表中删除船只信息
@@ -140,53 +135,71 @@ public class ShipServiceImpl implements ShipService {
                     System.out.println("船只"+name+"删除成功");
                     return true;
                 }else{
-                    System.out.println("船只"+name+"删除失败");
-                    return false;
+                    throw new BusinessException("船只"+name+"在入港申请表中删除失败");
                 }
             }
             return false;
-        } catch (Exception e) {
-            System.out.println("删除船只异常"+e.getMessage());
-            return false;
+        }catch (BusinessException e){
+            throw e;
+        }catch (Exception e) {
+            throw new BusinessException("船只删除异常：" + e.getMessage());
         }
     }
 
     @Override
     public Ship getById(Integer id) {
-        Ship ship=shipMapper.getById(id);
-        return ship;
+        try {
+            Ship ship=shipMapper.getById(id);
+            return ship;
+        } catch (Exception e) {
+            throw new BusinessException("通过id获取船只异常"+e.getMessage());
+        }
     }
 
     @Override
     public Ship getByName(String name) {
-        Ship ship=shipMapper.getByName(name);
-        return ship;
+        try {
+            Ship ship=shipMapper.getByName(name);
+            return ship;
+        } catch (Exception e) {
+            throw new BusinessException("通过name获取船只异常"+e.getMessage());
+        }
     }
 
     @Override
     public List<ShipVO> getByType(String type) {
-        if(!(type.equals("CARGO")||type.equals("FISHING")||type.equals("CRUISE"))){
-            return null;
+        try {
+            if(!(type.equals("CARGO")||type.equals("FISHING")||type.equals("CRUISE"))){
+                throw new BusinessException("船只类型无效");
+            }
+            List<ShipVO> ships=shipMapper.getByType(type);
+            return ships;
+        } catch (BusinessException e) {
+            throw e;
+        }catch (Exception e){
+            throw new BusinessException("船只类型获取异常："+e.getMessage());
         }
-        List<ShipVO> ships=shipMapper.getByType(type);
-        return ships;
     }
 
     @Override
     public boolean login(String shipName, String userName, String password) {
-        Ship ship=shipMapper.getByName(shipName);
-        Integer ownerId=ship.getOwnerId();
-        Manager manager=managerMapper.getById(ownerId);
-        if(!manager.getUsername().equals(userName)){
-            System.out.println("该船只不由"+userName+"管理");
-            return false;
+        try {
+            Ship ship=shipMapper.getByName(shipName);
+            Integer ownerId=ship.getOwnerId();
+            Manager manager=managerMapper.getById(ownerId);
+            if(!manager.getUsername().equals(userName)){
+                throw new BusinessException("该船只不由"+userName+"管理");
+            }
+            if(!manager.getPassword().equals(password)){
+                throw new BusinessException("密码错误");
+            }
+            System.out.println("登录成功");
+            return true;
+        } catch (BusinessException e) {
+            throw e;
+        }catch (Exception e){
+            throw new BusinessException("登录异常："+e.getMessage());
         }
-        if(!manager.getPassword().equals(password)){
-            System.out.println("密码错误");
-            return false;
-        }
-        System.out.println("登录成功");
-        return true;
     }
 
     @Override
@@ -196,8 +209,37 @@ public class ShipServiceImpl implements ShipService {
             System.out.println("船只"+shipName+"是否存在："+(ship!=null));
             return ship!=null;
         } catch (Exception e) {
-            System.out.println("判断船只名是否存在异常：" + e.getMessage());
-            return false;
+            throw new BusinessException("判断船只是否存在异常："+e.getMessage());
         }
+    }
+
+    @Override
+    public ShipCargoVO addProductToShip(Integer shipId, Integer productId, Integer cargoQuantity) {
+        return null;
+    }
+
+    @Override
+    public boolean deleteProductFromShip(Integer id) {
+        return false;
+    }
+
+    @Override
+    public boolean updateProductQuantity(Integer id, Integer cargoQuantity) {
+        return false;
+    }
+
+    @Override
+    public List<ProductVO> getAllProductsInShip(Integer shipId) {
+        return List.of();
+    }
+
+    @Override
+    public ProductVO getProductInShip(Integer shipId, Integer productId) {
+        return null;
+    }
+
+    @Override
+    public List<ProductVO> getAllAvailableProductsInShip(Integer shipId) {
+        return List.of();
     }
 }

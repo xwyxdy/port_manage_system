@@ -27,9 +27,6 @@ public class ReviewController {
             }else{
                 return ApiResultVO.error("审核意见提交失败");
             }
-        }catch(BusinessException e){
-            System.out.println("审核意见提交异常"+e.getMessage());
-            return ApiResultVO.error(e.getMessage());
         } catch (Exception e) {
             System.out.println("审核意见提交异常"+e.getMessage());
             return ApiResultVO.error("审核意见提交异常"+e.getMessage());
@@ -46,9 +43,6 @@ public class ReviewController {
             }else{
                 return ApiResultVO.error("审核员id提交失败");
             }
-        }catch(BusinessException e){
-            System.out.println("审核员id提交异常"+e.getMessage());
-            return ApiResultVO.error(e.getMessage());
         } catch (Exception e) {
             System.out.println("审核员id提交异常"+e.getMessage());
             return ApiResultVO.error("审核员id提交异常"+e.getMessage());
@@ -65,9 +59,6 @@ public class ReviewController {
             }else{
                 return ApiResultVO.error("查询失败");
             }
-        }catch(BusinessException e){
-            System.out.println("查询异常"+e.getMessage());
-            return ApiResultVO.error(e.getMessage());
         } catch (Exception e) {
             System.out.println("查询异常");
             return ApiResultVO.error("查询异常"+e.getMessage());
@@ -84,10 +75,7 @@ public class ReviewController {
             }else{
                 return ApiResultVO.error("删除失败");
             }
-        }catch (BusinessException e){
-            System.out.println("删除异常"+e.getMessage());
-            return ApiResultVO.error(e.getMessage());
-        }catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("删除异常"+e.getMessage());
             return ApiResultVO.error("删除异常"+e.getMessage());
         }
@@ -103,10 +91,7 @@ public class ReviewController {
             }else{
                 return ApiResultVO.error("查询失败");
             }
-        }catch (BusinessException e){
-            System.out.println("查询异常"+e.getMessage());
-            return ApiResultVO.error(e.getMessage());
-        }catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("查询异常");
             return ApiResultVO.error("查询异常"+e.getMessage());
         }

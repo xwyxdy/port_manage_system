@@ -17,7 +17,7 @@ public interface InPortService {
     InPortApplicationVO getLatestApplication(String shipName);
 
     //根据船只id在入港申请表中查询船只
-    Ship getByShipId(Integer id);
+    InPortDTO getByShipId(Integer id);
 
     //根据记录id在入港申请表中查询入港信息
     InPortDTO getById(Integer id);

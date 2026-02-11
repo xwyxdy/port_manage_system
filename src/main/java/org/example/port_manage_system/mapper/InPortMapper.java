@@ -15,7 +15,7 @@ public interface InPortMapper {
 
     //在入港申请表中根据id查询船只
     @Select("select * from port_entry_applications where ship_id=#{shipId}")
-    Ship getByShipId (Integer shipId);
+    InPortDTO getByShipId (Integer shipId);
 
     //在入港申请表中，根据主键id查询船只
     @Select("select * from port_entry_applications where id= #{id}")

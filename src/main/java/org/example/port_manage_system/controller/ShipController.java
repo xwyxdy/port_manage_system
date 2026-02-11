@@ -5,10 +5,12 @@ import org.example.port_manage_system.domain.dto.ShipDTO;
 import org.example.port_manage_system.domain.entity.Ship;
 import org.example.port_manage_system.domain.vo.ApiResultVO;
 import org.example.port_manage_system.domain.vo.InPortApplicationVO;
+import org.example.port_manage_system.domain.vo.ProductVO;
 import org.example.port_manage_system.domain.vo.ShipVO;
-import org.example.port_manage_system.service.InPortService;
-import org.example.port_manage_system.service.ShipService;
+import org.example.port_manage_system.exception.BusinessException;
+import org.example.port_manage_system.service.*;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +24,12 @@ public class ShipController {
     private ShipService shipService;
     @Autowired
     private InPortService inPortService;
+    @Autowired
+    private OutPortService outPortService;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private CategoryService categoryService;
 
     //新增船只
     @PostMapping("add")
@@ -169,4 +177,95 @@ public class ShipController {
             return ApiResultVO.error("申请入港异常"+e.getMessage());
         }
     }
+
+    //船只出港：获取出港时间
+    @PutMapping("getExitTime")
+    public ApiResultVO<InPortApplicationVO> getExitTime(@RequestParam String shipName){
+        try {
+            Ship ship=shipService.getByName(shipName);
+            if(ship==null){
+                return ApiResultVO.error("船只不存在");
+            }
+            Integer shipId=ship.getId();
+            boolean result = outPortService.updateExitTime(shipId);
+            if(result){
+                InPortDTO inPortDTO=inPortService.getByShipId(shipId);
+                InPortApplicationVO vo=new InPortApplicationVO();
+                BeanUtils.copyProperties(inPortDTO,vo);
+                return ApiResultVO.success("获取船只出港时间成功", vo);
+            }else{
+                return ApiResultVO.error("获取船只出港时间失败");
+            }
+        } catch (BeansException e) {
+            return ApiResultVO.error("获取船只出港时间异常"+e.getMessage());
+        }
+    }
+
+    //船长查询集市所有商品
+    @GetMapping("getAllMarketProducts")
+    public ApiResultVO<List<ProductVO>> getAllMarketProducts(){
+        try {
+            List<ProductVO> products = productService.getProducts();
+            if(products != null){
+                return ApiResultVO.success("查询集市所有商品成功", products);
+            }else{
+                return ApiResultVO.error("集市暂无商品");
+            }
+        }catch (Exception e) {
+            return ApiResultVO.error("查询集市所有商品异常"+e.getMessage());
+        }
+    }
+
+    //船长查询集市某类商品
+    @GetMapping("getMarketProductsByCategory")
+    public ApiResultVO<List<ProductVO>> getMarketProductsByCategory(@RequestParam String category){
+        try {
+            Integer categoryId = categoryService.getCategoryIdByName(category);
+            List<ProductVO> productVOS= productService.getProductByCategoryId(categoryId);
+            if(productVOS == null){
+                return ApiResultVO.error("集市暂无该类商品");
+            }else{
+                return ApiResultVO.success("查询集市"+category+"类商品成功", productVOS);
+            }
+        } catch (Exception e) {
+            return ApiResultVO.error("查询集市该类商品异常"+e.getMessage());
+        }
+    }
+
+    //船长查询某商品
+    @GetMapping("getMarketProductByName")
+    public ApiResultVO<ProductVO> getMarketProductByName(@RequestParam String name){
+        try {
+            ProductVO productVO = productService.getProductByName(name);
+            if(productVO == null){
+                return ApiResultVO.error("集市暂无该商品");
+            }else{
+                return ApiResultVO.success("查询集市"+name+"商品成功", productVO);
+            }
+        } catch (Exception e) {
+            return ApiResultVO.error("查询集市该商品异常"+e.getMessage());
+        }
+    }
+
+    //船长查询所有有库存的商品
+    @GetMapping("getAllAvailable")
+    public ApiResultVO<List<ProductVO>> getAllAvailable(){
+        try {
+            List<ProductVO> productVOS = productService.getAllAvailable();
+            if(productVOS == null){
+                return ApiResultVO.error("集市暂无商品");
+            }else{
+                return ApiResultVO.success("查询集市所有有库存商品成功", productVOS);
+            }
+        } catch (Exception e) {
+            return ApiResultVO.error("查询集市所有有库存商品异常"+e.getMessage());
+        }
+    }
+
+    //船长向船上添加商品
+    //船长删除船上某商品
+    //船长修改某商品数量
+    //船长查询船上所有商品
+    //船长查询船上某商品
+    //船长查询船上所有有库存商品
 }

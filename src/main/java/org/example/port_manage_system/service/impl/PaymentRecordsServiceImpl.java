@@ -2,6 +2,7 @@ package org.example.port_manage_system.service.impl;
 
 import org.example.port_manage_system.domain.dto.PaymentRecordsDTO;
 import org.example.port_manage_system.domain.vo.PaymentRecordsVO;
+import org.example.port_manage_system.exception.BusinessException;
 import org.example.port_manage_system.mapper.PaymentRecordsMapper;
 import org.example.port_manage_system.service.PaymentRecordsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +20,13 @@ public class PaymentRecordsServiceImpl implements PaymentRecordsService {
         try {
             PaymentRecordsVO paymentRecordsVO= paymentRecordsMapper.getPaymentRecordById(id);
             if(paymentRecordsVO==null){
-                System.out.println("支付记录不存在");
-                return null;
+                throw new BusinessException("支付记录"+id+"不存在");
             }
             return paymentRecordsVO;
+        }catch(BusinessException e){
+            throw e;
         } catch (Exception e) {
-            System.out.println("查询支付记录异常"+e.getMessage());
-            return null;
+            throw new BusinessException("查询支付记录异常"+e.getMessage());
         }
     }
 
@@ -37,12 +38,12 @@ public class PaymentRecordsServiceImpl implements PaymentRecordsService {
                 System.out.println("支付记录删除成功");
                 return true;
             }else{
-                System.out.println("支付记录删除失败");
-                return false;
+                throw new BusinessException("支付记录删除失败");
             }
-        } catch (Exception e) {
-            System.out.println("支付记录删除异常"+e.getMessage());
-            return false;
+        }catch (BusinessException e){
+            throw e;
+        }catch (Exception e) {
+            throw new BusinessException("支付记录删除异常"+e.getMessage());
         }
     }
 }

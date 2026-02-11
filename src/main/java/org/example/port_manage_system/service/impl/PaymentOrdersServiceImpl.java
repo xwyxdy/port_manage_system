@@ -3,6 +3,7 @@ package org.example.port_manage_system.service.impl;
 import org.example.port_manage_system.domain.dto.InPortDTO;
 import org.example.port_manage_system.domain.dto.PaymentOrdersDTO;
 import org.example.port_manage_system.domain.entity.Ship;
+import org.example.port_manage_system.exception.BusinessException;
 import org.example.port_manage_system.mapper.PaymentOrdersMapper;
 import org.example.port_manage_system.service.PaymentOrdersService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +24,13 @@ public class PaymentOrdersServiceImpl implements PaymentOrdersService {
         try {
             InPortDTO inPortDTO= inPortService.getById(id);
             if(inPortDTO==null){
-                System.out.println("船只未提交入港申请");
-                return null;
+                throw new BusinessException("船只未提交入港申请");
             }
             return paymentOrdersMapper.getPaymentOrdersById(id);
-        } catch (Exception e) {
-            System.out.println("查询支付订单异常");
-            return null;
+        }catch (BusinessException e){
+            throw e;
+        }catch (Exception e) {
+            throw new BusinessException("查询异常"+e.getMessage());
         }
     }
 
@@ -41,12 +42,10 @@ public class PaymentOrdersServiceImpl implements PaymentOrdersService {
                 System.out.println("支付订单删除成功");
                 return true;
             }else{
-                System.out.println("支付订单删除失败");
-                return false;
+                throw new BusinessException("支付订单删除失败");
             }
         } catch (Exception e) {
-            System.out.println("支付订单删除异常"+e.getMessage());
-            return false;
+            throw new BusinessException("支付订单删除异常"+e.getMessage());
         }
     }
 }

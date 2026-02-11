@@ -5,6 +5,7 @@ import org.example.port_manage_system.domain.bo.InPortBO;
 import org.example.port_manage_system.domain.dto.InPortDTO;
 import org.example.port_manage_system.domain.entity.Ship;
 import org.example.port_manage_system.domain.vo.InPortApplicationVO;
+import org.example.port_manage_system.exception.BusinessException;
 import org.example.port_manage_system.mapper.InPortMapper;
 import org.example.port_manage_system.mapper.ShipMapper;
 import org.example.port_manage_system.service.InPortService;
@@ -23,11 +24,18 @@ public class InPortServiceImpl implements InPortService {
     //在入港申请表中删除船只信息
     @Override
     public boolean deleteByShipId(Integer id) {
-        boolean result=inPortMapper.deleteByShipId(id);
-        if(result){
-            return true;
+        try {
+            boolean result=inPortMapper.deleteByShipId(id);
+            if(result){
+                return true;
+            }else{
+                throw new BusinessException("根据船只id在入港申请表中删除船只失败");
+            }
+        } catch (BusinessException e) {
+            throw e;
+        }catch (Exception e){
+            throw new BusinessException("根据船只id在入港申请表中删除船只异常");
         }
-        return false;
     }
 
     //提交入港申请
@@ -36,8 +44,7 @@ public class InPortServiceImpl implements InPortService {
         try {
             Ship ship=shipMapper.getByName(shipName);
             if(ship==null){
-                System.out.println("船只"+ship.getShipName()+"不存在");
-                return false;
+                throw new BusinessException("船只不存在");
             }
             // 2. 创建申请DTO
             InPortDTO dto = new InPortDTO();
@@ -47,12 +54,10 @@ public class InPortServiceImpl implements InPortService {
             dto.setReviewStatus("PENDING");
             InPortBO inPortBO=new InPortBO(dto);
             if(!inPortBO.isValidApplicationStatus()){
-                System.out.println("船只"+ship.getShipName()+"申请入港状态无效");
-                return false;
+                throw new BusinessException("船只"+ship.getShipName()+"申请入港申请状态无效");
             }
             if(!inPortBO.isValidReviewStatus()){
-                System.out.println("船只"+ship.getShipName()+"申请入港审核状态无效");
-                return false;
+                throw new BusinessException("船只"+ship.getShipName()+"申请入港审核状态无效");
             }
             int result=shipMapper.applyInPort(dto);
             //将船只状态改为PENDING
@@ -61,12 +66,12 @@ public class InPortServiceImpl implements InPortService {
                 System.out.println("船只"+ship.getShipName()+"申请入港成功");
                 return true;
             }else{
-                System.out.println("船只"+ship.getShipName()+"申请入港失败");
-                return false;
+                throw new BusinessException("船只"+ship.getShipName()+"申请入港失败");
             }
-        } catch (Exception e) {
-            System.out.println("申请入港异常：" + e.getMessage());
-            return false;
+        }catch (BusinessException e){
+            throw e;
+        }catch (Exception e) {
+            throw new BusinessException("申请入港异常"+e.getMessage());
         }
     }
 
@@ -76,13 +81,13 @@ public class InPortServiceImpl implements InPortService {
             // 1. 查询船只
             Ship ship = shipMapper.getByName(shipName);
             if (ship == null) {
-                return null;
+                throw new BusinessException("船只不存在");
             }
 
             // 2. 查询最新申请
             InPortDTO dto = shipMapper.getLatestApplicationByShipId(ship.getId());
             if (dto == null) {
-                return null;
+                throw new BusinessException("船只没有申请入港");
             }
 
             // 3. 转换为 VO
@@ -97,15 +102,16 @@ public class InPortServiceImpl implements InPortService {
             vo.setReviewerId(dto.getReviewerId());
 
             return vo;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+        }catch (BusinessException e){
+            throw e;
+        }catch (Exception e) {
+            throw new BusinessException("查询异常"+e.getMessage());
         }
     }
 
     //在入港申请表中根据船只id查询船只
     @Override
-    public Ship getByShipId(Integer id) {
+    public InPortDTO getByShipId(Integer id) {
         return inPortMapper.getByShipId(id);
     }
 
