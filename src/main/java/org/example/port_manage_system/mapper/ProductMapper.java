@@ -1,6 +1,7 @@
 package org.example.port_manage_system.mapper;
 
 import org.apache.ibatis.annotations.*;
+import org.example.port_manage_system.domain.dto.ProductResponseDTO;
 import org.example.port_manage_system.domain.entity.Product;
 import org.example.port_manage_system.domain.vo.ProductCategoryVO;
 
@@ -21,9 +22,17 @@ public interface ProductMapper {
     @Select("select * from products where product_name= #{productName}")
     Product getByName(String productName);
 
-    //根据商品类别查询商品
+    /**
+     * 根据商品类别id查询商品
+     * @param categoryId
+     * @return
+     */
     @Select("select * from products where category_id= #{categoryId}")
     List<Product> getByCategoryId(Integer categoryId);
+
+    //根据商品类别id查询商品
+    @Select("select * from products where category_id= #{categoryId}")
+    List<Product> getProductsByCategoryId(Integer categoryId);
 
     //根据商品状态查询商品
     @Select("select * from products where status = 'AVAILABLE'")
@@ -47,7 +56,10 @@ public interface ProductMapper {
     @Select("select count(*) from ship_cargo where product_id = #{id}")
     int checkProductUsage(Integer id);
 
-    //获取商品分类列表
+    /**
+     * 获取所有商品类别
+     * @return
+     */
     @Select("select * from product_categories")
     List<ProductCategoryVO> getCategoryList();
 }

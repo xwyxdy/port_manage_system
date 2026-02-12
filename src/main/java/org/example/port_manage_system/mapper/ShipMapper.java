@@ -2,6 +2,8 @@ package org.example.port_manage_system.mapper;
 
 import org.apache.ibatis.annotations.*;
 import org.example.port_manage_system.domain.dto.InPortDTO;
+import org.example.port_manage_system.domain.dto.ShipQueryDTO;
+import org.example.port_manage_system.domain.dto.ShipResponseDTO;
 import org.example.port_manage_system.domain.entity.Ship;
 import org.example.port_manage_system.domain.vo.ProductVO;
 import org.example.port_manage_system.domain.vo.ShipCargoVO;
@@ -74,4 +76,30 @@ public interface ShipMapper {
     //船长查询船上所有有库存商品
     @Select("select * from ship_cargo where ship_id = #{shipId} and cargo_quantity > 0")
     List<ProductVO> getAllAvailableProductsInShip(Integer shipId);
+
+    @Select({
+            "<script>",
+            "SELECT s.id, s.ship_name as shipName, s.owner_id as ownerId, ",
+            "u.username as ownerName, ",
+            "s.ship_type as shipType, s.ship_size as shipSize, ",
+            "s.qualification_status as qualificationStatus ",
+            "FROM ships s ",
+            "LEFT JOIN users u ON s.owner_id = u.id ",
+            "WHERE 1=1",
+            "<if test='qualificationStatus != null and qualificationStatus != \"\"'> AND s.qualification_status = #{qualificationStatus} </if>",
+            "LIMIT #{offset}, #{pageSize}",
+            "</script>"
+    })
+    List<ShipResponseDTO> selectShipList(@Param("qualificationStatus") String qualificationStatus,
+                                         @Param("offset") int offset,
+                                         @Param("pageSize") int pageSize);
+
+    @Select({
+            "<script>",
+            "SELECT COUNT(*) FROM ships s ",
+            "WHERE 1=1",
+            "<if test='qualificationStatus != null and qualificationStatus != \"\"'> AND s.qualification_status = #{qualificationStatus} </if>",
+            "</script>"
+    })
+    int countShipList(@Param("qualificationStatus") String qualificationStatus);
 }

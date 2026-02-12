@@ -1,5 +1,7 @@
 package org.example.port_manage_system.service;
 
+import org.example.port_manage_system.domain.dto.ShipPageDTO;
+import org.example.port_manage_system.domain.dto.ShipQueryDTO;
 import org.example.port_manage_system.domain.dto.ShipRequestDTO;
 import org.example.port_manage_system.domain.dto.ShipResponseDTO;
 import org.example.port_manage_system.domain.entity.Ship;
@@ -52,4 +54,12 @@ public interface ShipService {
 
     //船长查询船上所有有库存商品
     List<ProductVO> getAllAvailableProductsInShip(Integer shipId);
+
+
+    /**
+     * 分页查询船只
+     * @param queryDTO
+     * @return
+     */
+    ShipPageDTO getShipList(ShipQueryDTO queryDTO);
 }

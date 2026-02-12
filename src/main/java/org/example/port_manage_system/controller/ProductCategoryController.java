@@ -15,7 +15,7 @@ public class ProductCategoryController {
     /**
      * 获取所有产品类别
      */
-    @GetMapping("product-categories")
+    @GetMapping("api/product-categories")
     public ResultVO<ProductCategoryListVO> getAllProductCategories() {
         try {
             ProductCategoryListVO categoryList = productService.getCategoryList();

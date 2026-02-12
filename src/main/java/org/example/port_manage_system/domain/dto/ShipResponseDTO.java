@@ -14,6 +14,7 @@ public class ShipResponseDTO {
     private String shipType;
     private String shipSize;
     private String qualificationStatus;
+    private String ownerName;
 }
 enum ShipType{
     CARGO,    // 货船

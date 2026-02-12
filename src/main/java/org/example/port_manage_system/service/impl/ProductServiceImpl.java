@@ -1,8 +1,7 @@
 package org.example.port_manage_system.service.impl;
 
 import org.example.port_manage_system.domain.bo.ProductBO;
-import org.example.port_manage_system.domain.dto.ProductAddDTO;
-import org.example.port_manage_system.domain.dto.ProductUpdateDTO;
+import org.example.port_manage_system.domain.dto.*;
 import org.example.port_manage_system.domain.entity.Product;
 import org.example.port_manage_system.domain.vo.ProductCategoryListVO;
 import org.example.port_manage_system.domain.vo.ProductCategoryVO;
@@ -16,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -164,16 +164,31 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductVO> getProductByCategoryId(Integer categoryId) {
-        try {
-            List<Product> products=productMapper.getByCategoryId(categoryId);
-            return products.stream().map(this::convertToVO).collect(Collectors.toList());
-        }catch (BusinessException e){
-            throw e;
-        }catch (Exception e) {
-            throw new BusinessException("查询商品异常"+e.getMessage());
+    public ProductPageDTO getProductByCategoryId(ProductQueryDTO query) {
+        int offset=(query.getPage()-1)*query.getPageSize();
+        Integer categoryId = query.getCategoryId();
+        List<Product> products=productMapper.getByCategoryId(categoryId);
+        List<ProductResponseDTO> responseList=new ArrayList<>();
+        for (Product product : products){
+            ProductResponseDTO response=new ProductResponseDTO();
+            response.setId(product.getId());
+            response.setProductName(product.getProductName());
+            response.setQuantity(product.getQuantity());
+            response.setCategoryId(categoryId);
+            response.setCategoryName(categoryService.getCategoryNameById(categoryId));
+            response.setUnitPrice(product.getUnitPrice());
+            response.setStatus(product.getStatus());
+            responseList.add(response);
         }
+        return new ProductPageDTO(responseList,responseList.size());
+
     }
+
+    @Override
+    public List<Product> getProductsByCategoryId(Integer categoryId) {
+        return productMapper.getProductsByCategoryId(categoryId);
+    }
+
 
     @Override
     public List<ProductVO> getProducts() {

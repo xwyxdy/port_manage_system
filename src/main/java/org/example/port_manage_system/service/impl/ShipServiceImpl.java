@@ -1,9 +1,7 @@
 package org.example.port_manage_system.service.impl;
 
 import org.example.port_manage_system.domain.bo.ShipBO;
-import org.example.port_manage_system.domain.dto.InPortDTO;
-import org.example.port_manage_system.domain.dto.ShipRequestDTO;
-import org.example.port_manage_system.domain.dto.ShipResponseDTO;
+import org.example.port_manage_system.domain.dto.*;
 import org.example.port_manage_system.domain.entity.Manager;
 import org.example.port_manage_system.domain.entity.Ship;
 import org.example.port_manage_system.domain.vo.ProductVO;
@@ -230,5 +228,30 @@ public class ShipServiceImpl implements ShipService {
     @Override
     public List<ProductVO> getAllAvailableProductsInShip(Integer shipId) {
         return List.of();
+    }
+
+    @Override
+    public ShipPageDTO getShipList(ShipQueryDTO queryDTO) {
+
+        // 计算偏移量
+        int offset = (queryDTO.getPage() - 1) * queryDTO.getPageSize();
+
+        // 查询列表和总数 - 去掉ownerId参数
+        List<ShipResponseDTO> list = shipMapper.selectShipList(
+                queryDTO.getQualificationStatus(),
+                offset,
+                queryDTO.getPageSize()
+        );
+
+        int total = shipMapper.countShipList(
+                queryDTO.getQualificationStatus()
+        );
+
+        // 封装返回结果
+        ShipPageDTO shipPageDTO = new ShipPageDTO();
+        shipPageDTO.setList(list);
+        shipPageDTO.setTotal(total);
+
+        return shipPageDTO;
     }
 }
