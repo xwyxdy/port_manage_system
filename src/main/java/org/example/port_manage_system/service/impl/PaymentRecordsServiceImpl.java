@@ -1,6 +1,7 @@
 package org.example.port_manage_system.service.impl;
 
 import org.example.port_manage_system.domain.dto.PaymentRecordsDTO;
+import org.example.port_manage_system.domain.dto.RecordsQueryDTO;
 import org.example.port_manage_system.domain.vo.PaymentRecordsVO;
 import org.example.port_manage_system.exception.BusinessException;
 import org.example.port_manage_system.mapper.PaymentRecordsMapper;
@@ -8,6 +9,8 @@ import org.example.port_manage_system.service.PaymentRecordsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 
 @Service
 @Transactional
@@ -46,4 +49,20 @@ public class PaymentRecordsServiceImpl implements PaymentRecordsService {
             throw new BusinessException("支付记录删除异常"+e.getMessage());
         }
     }
+
+    @Override
+    public boolean insertPaymentRecords(RecordsQueryDTO query) {
+
+        return paymentRecordsMapper.insertPaymentRecord(query);
+    }
+
+    @Override
+    public Integer getRecordIdByOrderId(Integer orderId) {
+       return paymentRecordsMapper.getPaymentRecordIdByOrderId(orderId);
+    }
+    @Override
+    public BigDecimal getTotalPaidAmount(Integer orderId) {
+        return paymentRecordsMapper.sumPaidAmountByOrderId(orderId);
+    }
+
 }

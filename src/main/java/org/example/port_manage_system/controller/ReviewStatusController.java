@@ -84,13 +84,18 @@ public class ReviewStatusController {
      * 根据审核状态获取审核列表
      */
     @GetMapping
-    public ApplicationPageDTO getByReview(@RequestParam(defaultValue = "1") Integer page,
+    public ResultVO<ApplicationPageDTO> getByReview(@RequestParam(defaultValue = "1") Integer page,
                                           @RequestParam(defaultValue = "10") Integer pageSize,
                                           @RequestParam(required = false) String reviewStatus){
-        ApplicationQueryDTO query = new ApplicationQueryDTO();
-        query.setPage(page);
-        query.setPageSize(pageSize);
-        query.setReviewStatus(reviewStatus);
-        return reviewerService.getByReview(query);
+        try {
+            ApplicationQueryDTO query = new ApplicationQueryDTO();
+            query.setPage(page);
+            query.setPageSize(pageSize);
+            query.setReviewStatus(reviewStatus);
+            ApplicationPageDTO applications = reviewerService.getByReview(query);
+            return ResultVO.success("查询成功",applications);
+        } catch (Exception e) {
+            return ResultVO.error("查询异常"+e.getMessage());
+        }
     }
 }

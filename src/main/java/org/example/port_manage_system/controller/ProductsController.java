@@ -115,14 +115,19 @@ public class ProductsController {
      * @return
      */
     @GetMapping
-    public ProductPageDTO getProductByCategory(@RequestParam(defaultValue = "1") Integer page,
+    public ResultVO<ProductPageDTO> getProductByCategory(@RequestParam(defaultValue = "1") Integer page,
                                                @RequestParam(defaultValue = "10")Integer pageSize,
                                                @RequestParam(required = false) Integer categoryId) {
-        ProductQueryDTO query = new ProductQueryDTO();
-        query.setPage(page);
-        query.setPageSize(pageSize);
-        query.setCategoryId(categoryId);
-        return productService.getProductByCategoryId(query);
+        try {
+            ProductQueryDTO query = new ProductQueryDTO();
+            query.setPage(page);
+            query.setPageSize(pageSize);
+            query.setCategoryId(categoryId);
+            ProductPageDTO products = productService.getProductByCategoryId(query);
+            return ResultVO.success("查询成功", products);
+        } catch (Exception e) {
+            return ResultVO.serverError("查询失败：" + e.getMessage());
+        }
 
     }
 
